@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>QR Code Generator</title>
+</head>
+<body>
+
+<h2>QR Code Generator</h2>
+
+<input type="text" id="qrText" placeholder="Enter text here">
+<button onclick="generateQR()">Generate QR</button>
+
+<br><br>
+
+<img id="qrImage" alt="QR Code will appear here"/>
+
+<script>
+function generateQR() {
+    let text = document.getElementById("qrText").value;
+
+    document.getElementById("qrImage").src =
+        "http://localhost:9090/qrcode?text=" + encodeURIComponent(text);
+}
+</script>
+
+</body>
+</html>
