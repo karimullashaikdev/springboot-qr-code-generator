@@ -7,19 +7,61 @@
 
 <h2>QR Code Generator</h2>
 
+<!-- Text input -->
 <input type="text" id="qrText" placeholder="Enter text here">
-<button onclick="generateQR()">Generate QR</button>
 
 <br><br>
+
+<!-- Image upload -->
+<input type="file" id="imageFile" accept="image/*">
+
+<br><br>
+
+<button onclick="generateQR()">Generate QR</button>
+
+<p id="errorMsg" style="color:red;"></p>
+
+<br>
 
 <img id="qrImage" alt="QR Code will appear here"/>
 
 <script>
 function generateQR() {
-    let text = document.getElementById("qrText").value;
 
-    document.getElementById("qrImage").src =
-        "http://localhost:9090/qrcode?text=" + encodeURIComponent(text);
+    let text = document.getElementById("qrText").value.trim();
+    let imageInput = document.getElementById("imageFile");
+    let errorMsg = document.getElementById("errorMsg");
+
+    errorMsg.innerText = "";
+
+    // ❌ both empty
+    if (text === "" && imageInput.files.length === 0) {
+        errorMsg.innerText = "Please enter text or upload an image";
+        return;
+    }
+
+    // ✅ Image has priority
+    if (imageInput.files.length > 0) {
+
+        let formData = new FormData();
+        formData.append("image", imageInput.files[0]);
+
+        fetch("http://localhost:9090/upload", {
+            method: "POST",
+            body: formData
+        })
+        .then(res => res.text())
+        .then(url => {
+            document.getElementById("qrImage").src =
+                "http://localhost:9090/qrcode?text=" + encodeURIComponent(url);
+        });
+
+    }
+    // ✅ Text QR
+    else {
+        document.getElementById("qrImage").src =
+            "http://localhost:9090/qrcode?text=" + encodeURIComponent(text);
+    }
 }
 </script>
 
